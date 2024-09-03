@@ -208,8 +208,8 @@ int main() {
     displayTuplesFromBinaryFile("database.bin");
 
     // Display content from text file
-    printf("\nDisplaying content from text file:\n");
-    displayContentFromTextFile("database.txt");
+    //printf("\nDisplaying content from text file:\n");
+    //displayContentFromTextFile("database.txt");
 
 
     
