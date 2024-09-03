@@ -124,12 +124,95 @@ void displayResult(int totalPages, int totalTuples) {
     printf("Total Tuples: %d\n", totalTuples);
 }
 
+
+
+
+
+
+// Function to read and display content from a text file
+void displayContentFromTextFile(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening text file");
+        return;
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), file) != NULL) {
+        printf("%s", line);
+    }
+
+    fclose(file);
+}
+
+
+
+
+
+// Function to read and display tuples from a binary file
+void displayTuplesFromBinaryFile(const char *filename) {
+    FILE *file = fopen(filename, "rb");
+    if (file == NULL) {
+        perror("Error opening binary file");
+        return;
+    }
+
+    struct PageHeader header;
+    struct Tuple tuple;
+
+    while (fread(&header, sizeof(struct PageHeader), 1, file) == 1) {
+        printf("Page No: %u\n", header.pageNo);
+        printf("Next Page No: %u\n", header.nextPageNo);
+        printf("Free Space: %u\n", header.freeSpace);
+        printf("Number of Items: %u\n", header.nItems);
+        printf("Offset: %u\n", header.offset);
+        
+        for (int i = 0; i < header.nItems; i++) {
+            if (fread(&tuple, sizeof(struct Tuple), 1, file) != 1) {
+                perror("Error reading tuple from binary file");
+                fclose(file);
+                return;
+            }
+
+            printf("Tuple %d:\n", i + 1);
+            printf("  Name: %s\n", tuple.person.name);
+            printf("  Address: %s\n", tuple.person.address);
+            printf("  Age: %d\n", tuple.person.age);
+        }
+    }
+
+    fclose(file);
+}
+
+
+
+
+
+
+
+
+
+
+
+
 // Example usage
 int main() {
     int totalTuples = 1000000; // Change this to the desired total number of tuples
 
     writePagesToFile(totalTuples);
     displayResult(totalTuples / (PAGE_SIZE / sizeof(struct Tuple)), totalTuples);
+
+
+    // Display content from binary file
+    printf("Displaying content from binary file:\n");
+    displayTuplesFromBinaryFile("database.bin");
+
+    // Display content from text file
+    printf("\nDisplaying content from text file:\n");
+    displayContentFromTextFile("database.txt");
+
+
+    
 
     return 0;
 }
